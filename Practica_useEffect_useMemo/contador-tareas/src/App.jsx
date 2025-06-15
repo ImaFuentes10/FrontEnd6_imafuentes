@@ -71,10 +71,11 @@ function App() {
 
   return (
     <>
-    <div>
+    <div className='w-full flex flex-col'>
       <h1>Contador de Tareas</h1>
-      <section>
+      <section className="flex space-x-4">
         <input 
+          className='border-indigo-500'
           type="text" 
           value={nuevaTarea} 
           onChange={(e) => setNuevaTarea(e.target.value)} 
@@ -86,7 +87,7 @@ function App() {
           onChange={(e) => setDuracion(e.target.value)} 
           placeholder="Duración en minutos" 
         />
-        <button onClick={agregarTarea}>Agregar tarea</button>
+        <button onClick={agregarTarea} className='bg-blue-500 border-red-100'>Agregar tarea</button>
       </section>
 
       <section>
