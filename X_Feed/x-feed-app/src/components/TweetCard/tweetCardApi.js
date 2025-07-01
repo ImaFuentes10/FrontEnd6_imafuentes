@@ -5,12 +5,13 @@ async function getName() {
     try{
         const response = await fetch(url);
         if(!response.ok){
-            throw new Error ('Response status:', response.status)
+            throw new Error (`Response status: ${response.status}`)
         }
         const json = await response.json();
         return json;
     } catch(error) {
-        console.error(error.message)
+        console.error('Error in getName:', error);
+        return null;
     }
 }
 
@@ -22,12 +23,13 @@ async function getPost(id) {
     try{
         const response = await fetch(url);
         if(!response.ok){
-            throw new Error ('Response status:', response.status)
+            throw new Error (`Response status: ${response.status}`)
         }
         const json = await response.json();
         return json;
     } catch(error) {
-        console.error(error.message)
+        console.error('Error in getPost:', error);
+        return null;
     }
 }
 
@@ -35,7 +37,12 @@ async function getPost(id) {
 // User data
 export async function userData(){
     const data = await getName();
+    
+    if(!data || !data.results || !Array.isArray(data.results) || data.results.length === 0) return;
+
     const results = data.results[0];
+
+    if(!results.picture || !results.picture.large || !results.picture.large.length === 0 || !results.name || !results.name.length === 0 || !results.name.first || !results.name.last || !results.name.first.length === 0 || !results.name.last.length === 0 || !results.login || !results.login.username || !results.login.length === 0 || !results.login.username.length === 0) return;
 
     const firstName = results.name.first;
     const lastName = results.name.last;
@@ -54,6 +61,8 @@ export async function tweetBody() {
 
     const data = await getPost(id);
     
+    if(!data) return
+
     const body = data.body;
 
     return body

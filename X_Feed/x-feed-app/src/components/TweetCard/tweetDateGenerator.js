@@ -18,7 +18,6 @@ export const getTweetDate = () => {
         day: 'numeric',
         }),
     }
-    console.log(dates.formattedCreationDate, dates.formattedCurrentDate);
     
 
     if (dates.formattedCreationDate !== dates.formattedCurrentDate) return dates.formattedCreationDate;

@@ -4,7 +4,7 @@ function SideBar() {
 
     return (
         <>
-            <div className="w-24 h-screen">
+            <div className="col-span-2 h-full">
 
             </div>
         </>
