@@ -2,31 +2,61 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import TweetCard from "./TweetCard/TweetCard";
 import TweetComposer from "./TweetComposer";
 import SideBar from "./SideBar";
-
+import { userData, tweetBody, tweetInteractions } from "./TweetCard/tweetCardApi";
+import { getTweetDate } from "./TweetCard/tweetDateGenerator";
 
 function TweeetFeed () {
-    const [tweets, setTweets] = useState(() => {
-        return Array.from({ length: 8 }, (_,i) => ({ id: i, createdAt: TweetCard.date}))
-    });
+    const [tweets, setTweets] = useState([])/* useState(() => {
+        return Array.from({ length: 8 }, () => ({ 
+            id: crypto.randomUUID(), 
+            createdAt: TweetCard.date}))
+    }); */
+
+    useEffect(()=> {
+        const fetchInitialTweets = async() => {
+        const initialTweets = 6
+        for(let i=0; i<initialTweets; i++) {
+            await generateNewTweets(initialTweets)
+            }
+        };
+        fetchInitialTweets();
+    },[])
 
     const scrollRef = useRef();
-    const [nextTweetId, setNextTweetId] = useState(8);
+   /*  const [nextTweetId, setNextTweetId] = useState(8); */
     const lastScrollTop = useRef(0);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const generateNewTweets = useCallback(() => {
-        const newTweetsCount = 1; // Solo generar 3 tweets a la vez
-        const newTweets = Array.from({ length: newTweetsCount }, (_, i) => ({
-            id: nextTweetId + i,
-            createdAt: Date.now() - (nextTweetId + i) * 1000
-        }));
-        
-        setTweets(prev => [...prev, ...newTweets]);
-        setNextTweetId(prev => prev + newTweetsCount);
-    }, [nextTweetId])
+    const generateNewTweets = useCallback(async (tweets) => {
+        const newTweetsCount = tweets;
+        const newTweets = await Promise.all(
+            Array.from({ length: newTweetsCount }, async () => {
+                const user = await userData();
+                if(!user /* || !name || !username || !pictureURL */) return
+
+                const body = await tweetBody();
+                if(!body) return
+
+                const interactions = await tweetInteractions();
+                if(!interactions) return
+
+                const date = getTweetDate();
+
+                return {
+                    id: crypto.randomUUID(),
+                    createdAt: date,
+                    ...user,
+                    ...body,
+                    ...interactions
+                };
+            })
+        );
+        setTweets(prev => [...prev, ...newTweets.filter(Boolean)]); //Agrego nuevos tweets. Filtro a sólo booleanos para evitar tweets con propiedades undefined
+    }, []);
 
     const handleScroll = useCallback(() => {
         const container = scrollRef.current;
-        /* if (!container || isLoading) return; */
+        if (!container || isLoading) return;
 
         const { scrollTop, scrollHeight, clientHeight } = container;
         const currentScrollTop = scrollTop;
@@ -38,17 +68,17 @@ function TweeetFeed () {
         const isNearBottom = scrollHeight - scrollTop - clientHeight < 200;
 
         if (isScrollingDown && isNearBottom) {
-            /* setIsLoading(true); */
+            setIsLoading(true);
             
             // Pequeño delay para evitar spam de generación
             setTimeout(() => {
-                generateNewTweets();
-            /*     setIsLoading(false);*/
+                generateNewTweets(3);
+                setIsLoading(false);
             }, 100);
         }
 
         lastScrollTop.current = currentScrollTop;
-    }, [generateNewTweets/* , isLoading */]);
+    }, [generateNewTweets, isLoading ]);
     
 
 
@@ -59,7 +89,7 @@ function TweeetFeed () {
                 <div className="flex flex-col col-span-10 border-x border-zinc-900">
                     <TweetComposer />
                     <ul>
-                        {tweets.map((tweet) => <TweetCard key={tweet.id} />)}
+                        {tweets.map((tweet) =><TweetCard key={tweet.id} name={tweet.name} username={tweet.username} picture={tweet.picture} date={tweet.createdAt} text={tweet.body} likes={tweet.likes} comments={tweet.comments} retweets={tweet.retweets} views={tweet.views} /> )}
                     </ul>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 /* API REQUESTS */
 // User data request
 async function getName() {
-    const url = "https://randomuser.me/api/";
+    const url = "randomuser/api/"; //configure proxy en vite.config.js para evitar CORS
     try{
         const response = await fetch(url);
         if(!response.ok){
@@ -65,7 +65,7 @@ export async function tweetBody() {
 
     const body = data.body;
 
-    return body
+    return { body }
 }
 
 //Tweet interactions data
@@ -73,13 +73,16 @@ export async function tweetInteractions() {
     const id = getID();
 
     const data = await getPost(id);
-    
+    if(!data) return
+
     const likes = data.reactions.likes;
     const retweets = data.userId;
     const views = data.views;
     const comments = data.reactions.dislikes;
 
-    return {likes, retweets, views, comments}
+    if(!likes || !retweets || !views || !comments ) return
+
+    return { likes, retweets, views, comments }
 }
 
 //random ID generator

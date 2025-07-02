@@ -31,7 +31,7 @@ export default function TweetInfo(props) {
                         <MdOutlineMoreHoriz />
                     </div>
                     </div>
-                    <Body />
+                    <Body text={props.text} />
                 </div>
             </div>
         </>

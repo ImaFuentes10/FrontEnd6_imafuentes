@@ -7,8 +7,8 @@ import Interactions from "./Interactions";
 import { userData } from "./tweetCardApi";
 import { getTweetDate } from "./tweetDateGenerator";
 
-function TweetCard() {
-    const [name, setName] = useState("");
+function TweetCard(props) {
+   /*  const [name, setName] = useState("");
     const [username, setUsername] = useState("");
     const [pictureURL, setPictureURL] = useState(null);
     const [date, setDate] = useState("");
@@ -32,17 +32,17 @@ function TweetCard() {
     useEffect(() => {
         getInfo()
         generateNewDate();
-    },[])
+    },[]) */
 
-    if (!name || !username || !pictureURL) return null;
+    if (!props.name || !props.username || !props.picture || !props.text || !props.comments || !props.likes || !props.retweets || !props.views || !props.date ) return null;
 
 
     return (
         <>
            
                 <div className="border-b-1 border-zinc-800">
-                    <TweetInfo name={name} username={username} picture={pictureURL} date={date} />
-                    <Interactions className="" /> 
+                    <TweetInfo name={props.name} username={props.username} picture={props.picture} date={props.date} text={props.text} />
+                    <Interactions comments={props.comments} likes={props.likes} retweets={props.retweets} views={props.views} /> 
 
                 </div>
             
