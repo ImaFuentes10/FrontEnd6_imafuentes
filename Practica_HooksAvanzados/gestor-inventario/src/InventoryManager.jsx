@@ -1,4 +1,4 @@
-import { useReducer, useRef, useCallback, useState } from "react";
+import { useReducer, useRef, useCallback, useState, useEffect } from "react";
 
 const initialState = { products: [], search:[], onSearch: false};
 
@@ -34,6 +34,10 @@ function reducer(state, action) {
                 search: state.products.filter(p => p.name.includes(action.search)),
                 onSearch: action.search === "" ? false : true
             }
+        case 'refresh':
+            return action.localState
+        case 'clear':
+            return initialState
         default:
             return state;
     }
@@ -77,6 +81,27 @@ export default function InventoryManager() {
         /* console.log(search) */
     }, [])
 
+    useEffect(() => {
+        const inventoryState = localStorage.getItem("Inventory");
+        if(!inventoryState) return
+        const localState = JSON.parse(inventoryState);
+        dispatch({ type: 'refresh', localState})
+        dispatch({type: "search", search: ""})
+    }, [])
+
+    useEffect(() => {
+        localStorage.setItem( "Inventory", JSON.stringify(state))
+    }, [state])
+
+    const handleEmptyInventary = useCallback(() => {
+        if(confirm("¿Deseas vaciar el inventario?")){
+            dispatch({ type: 'clear'});
+            if(inputRef.current) inputRef.current.value = "";
+            if (searchRef.current) searchRef.current.value = "";
+            setSearch("");
+        }
+    },[])
+
     return (
         <div className="flex flex-col justify-start items-center">
             <h2 className="font-bold m-2">Gestor de Inventario</h2>
@@ -90,6 +115,7 @@ export default function InventoryManager() {
             <div>
                 <input ref={inputRef} type="text" placeholder="Nombre del producto" className="border-1 border-gray-300 bg-gray-600 rounded-md p-1 placeholder-gray-400 mx-2" />
                 <button onClick={handleAddProduct} className="bg-gray-700 p-1 px-2 border-1 border-gray-400 rounded-md mx-2 w-36">Agregar Producto</button> 
+                <button onClick={handleEmptyInventary} className="bg-gray-700 p-1 px-2 border-1 border-gray-400 rounded-md mx-2 w-36">Vaciar Inventario</button> 
             </div>
 
             <ul>
