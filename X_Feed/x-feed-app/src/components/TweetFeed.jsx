@@ -52,6 +52,9 @@ function TweeetFeed () {
             })
         );
         setTweets(prev => [...prev, ...newTweets.filter(Boolean)]); //Agrego nuevos tweets. Filtro a sólo booleanos para evitar tweets con propiedades undefined
+        /* for (const tweet of newTweets) {
+            console.log(tweet)
+        } */
     }, []);
 
     const handleScroll = useCallback(() => {
@@ -89,7 +92,7 @@ function TweeetFeed () {
                 <div className="flex flex-col col-span-10 border-x border-zinc-900">
                     <TweetComposer />
                     <ul>
-                        {tweets.map((tweet) =><TweetCard key={tweet.id} name={tweet.name} username={tweet.username} picture={tweet.picture} date={tweet.createdAt} text={tweet.body} likes={tweet.likes} comments={tweet.comments} retweets={tweet.retweets} views={tweet.views} /> )}
+                        {tweets.map((tweet) =><TweetCard key={tweet.id} tweetInfo={tweet} /> )}
                     </ul>
                 </div>
             </div>
